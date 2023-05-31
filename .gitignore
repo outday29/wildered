@@ -1,0 +1,13 @@
+secret.*
+__pycache__
+sample_project
+.ipynb_checkpoints
+.ruff_cache
+.python-version
+.venv
+.vscode
+.butterfly
+.pytest_cache
+archive
+TODO.md
+dist

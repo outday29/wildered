@@ -1,0 +1,54 @@
+[tool.poetry]
+name = "wildered"
+version = "0.1.0"
+description = ""
+authors = ["engkheng <ongengkheng929@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pydantic = "^1.10.8"
+ast-comments = "^1.0.1"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.0.270"
+pytest = "^7.3.1"
+black = "^23.3.0"
+poethepoet = "^0.20.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poe.tasks]
+test = "pytest tests"
+ruff-format = "ruff --select I --fix ."
+ruff-lint = "ruff ."
+black-format = "black ."
+black-lint = "black . --check"
+format = [
+    "ruff-format",
+    "black-format"
+]
+lint = [
+    "ruff-lint",
+    "black-lint"
+]
+
+[tool.black]
+exclude = [
+    "expected_scripts",
+    "example_scripts"
+]
+
+[tool.ruff]
+select = [
+    "E",
+    "F",
+    "I"
+]
+exclude = [
+    "expected_scripts",
+    "example_scripts"
+]
