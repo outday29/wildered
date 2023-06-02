@@ -25,7 +25,7 @@ class BaseDirectiveConfig(object):
         default_factory=set
     )  # TODO
     requires: List[str] = Field(default_factory=list)
-    conflict: List[str] = Field(default_factory=list)
+    resists: List[str] = Field(default_factory=list)
 
     @validator("allowed_context", always=True)
     def set_default_context(cls, v):

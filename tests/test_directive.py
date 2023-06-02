@@ -44,6 +44,9 @@ def test_allow_multiple(hello_ast_parser: ASTDirectiveParser):
         source = ASTSourceCode.from_file("./tests/example_scripts/allow_multiple.py")
         world.parse(source=source, drop_directive=True)
 
+def test_function_only(popcorn_ast_parser: ASTDirectiveParser):
+    pass
+
 
 def test_invalid_directive():
     with pytest.raises(ValueError):

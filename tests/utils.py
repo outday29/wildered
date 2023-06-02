@@ -28,6 +28,27 @@ def hello_ast_parser() -> ASTDirectiveParser:
 
         class DirectiveConfig(BaseDirectiveConfig):
             name = "world"
+    
+    class FunctionOnly(Directive):
+        dummy: str
+        
+        class DirectiveConfig(BaseDirectiveConfig):
+            name = "function_only"
+            allowed_context = {"function"}
+            requires = {"hello"}
+            resists = {"World"}
+            allow_multiple = False
+    
+    class ModuleOnly(Directive):
+        dummy: str
+        
+        class DirectiveConfig(BaseDirectiveConfig):
+            name = "module_only"
+            allowed_context = {"module"}
+            requires = {"hello"}
+            resists = {"World"}
+            allow_multiple = False
+                    
 
     class Singleton(Directive):
         dummy: str = ""
@@ -40,7 +61,7 @@ def hello_ast_parser() -> ASTDirectiveParser:
             name = "single"
             allow_multiple = False
 
-    return ASTDirectiveParser(prefix_name="world", directives=[Hello, World, Singleton])
+    return ASTDirectiveParser(prefix_name="world", directives=[Hello, World, Singleton, ModuleOnly, FunctionOnly])
 
 
 @pytest.fixture

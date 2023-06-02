@@ -15,6 +15,7 @@ from typing import (
 
 import ast_comments
 from pydantic import BaseModel, validator
+from typing_extensions import assert_never
 
 from wildered.ast_parser.utils import (
     DropDirective,
@@ -22,7 +23,7 @@ from wildered.ast_parser.utils import (
     get_call_name,
     locate_function,
 )
-from wildered.directive import Directive, DirectiveConfig, Identifier
+from wildered.directive import Directive, DirectiveConfig, DirectiveContext, Identifier
 from wildered.models import BaseDirectiveParser
 
 from .source_code import ASTSourceCode
@@ -50,6 +51,7 @@ class ASTDirectiveParser(BaseDirectiveParser):
             drop_transformer = DropDirective(prefix=self.prefix_name)
             drop_transformer.visit(source.node)
 
+        self.check_valid_combination(entity_list = detector.detected)
         return detector.detected
 
     class Config:
@@ -63,6 +65,7 @@ class ASTEntity(BaseModel, ABC):
     source: ASTSourceCode
     directives: Dict[str, List[Directive]]
     parser: ASTDirectiveParser
+    _context: DirectiveContext
 
     class Config:
         arbitrary_types_allowed = True
@@ -120,6 +123,7 @@ class ASTEntity(BaseModel, ABC):
 
 class ASTClassEntity(ASTEntity):
     node: ast.ClassDef
+    _context = "class"
 
     def update(self, new_code: ast.ClassDef | str) -> None:
         if isinstance(new_code, str):
@@ -135,6 +139,7 @@ class ASTClassEntity(ASTEntity):
 
 class ASTFunctionEntity(ASTEntity):
     node: ast.FunctionDef
+    _context = "function"
 
     def update(self, new_code: ast.FunctionDef | str) -> None:
         if isinstance(new_code, str):
@@ -150,6 +155,7 @@ class ASTFunctionEntity(ASTEntity):
 
 class ASTModuleEntity(ASTEntity):
     _idx: int  # The index for holding the location of the file level directive
+    _context = "module"
 
     @validator("wrapping_node")
     def check_wrapping_node(cls, v):
@@ -180,24 +186,31 @@ def parse_arguments(node: ast.Call) -> Tuple[List[Any], dict[str, Any]]:
     return positional_arg, keyword_arg
 
 
-def extract_value(node):
-    if isinstance(node, ast.Constant):
-        return node.value
-    elif isinstance(node, ast.Expr):
-        return Identifier(node=node, name=node.value)
-    elif isinstance(node, ast.Dict):
-        return extract_dict(node)
-    elif isinstance(node, ast.Name):
-        return Identifier(node=node, name=node.id)
-    elif isinstance(node, ast.Str):
-        return node.s
-    elif isinstance(node, ast.Num):
-        return node.n
-    elif isinstance(node, ast.List):
-        return extract_list(node)
-    else:
-        return None
-
+def extract_value(node: ast.AST):
+    match node:
+        case ast.Constant():
+            return node.value
+        
+        case ast.Expr():
+            return Identifier(node=node, name=node.value)
+        
+        case ast.Dict():
+            return extract_dict(node=node)
+        
+        case ast.Name():
+            return Identifier(node=node, name=node.id)
+        
+        case ast.Str():
+            return node.s
+        
+        case ast.Num():
+            return node.n
+        
+        case ast.List():
+            return extract_list(node)
+        
+        case other:
+            assert_never(other)
 
 def extract_dict(node):
     return {
@@ -243,7 +256,7 @@ class DetectDirective(ast.NodeVisitor):
             prefix, node_name = get_call_name(node)
             if (prefix == self.prefix) and (node_name == "run"):
                 directives = self.extract_directives(
-                    decorators=node.args, context="file"
+                    decorators=node.args,
                 )
                 if len(directives) != 0:
                     node_task = ASTModuleEntity(
@@ -264,7 +277,7 @@ class DetectDirective(ast.NodeVisitor):
 
     def visit_FunctionDef(self, node: ast.FunctionDef) -> Any:
         directives = self.extract_directives(
-            decorators=node.decorator_list, context="class"
+            decorators=node.decorator_list
         )
         node_task = ASTFunctionEntity(
             parser=self.parser,
@@ -285,7 +298,7 @@ class DetectDirective(ast.NodeVisitor):
 
     def visit_ClassDef(self, node: ast.ClassDef) -> Any:
         directives = self.extract_directives(
-            decorators=node.decorator_list, context="class"
+            decorators=node.decorator_list,
         )
         node_task = ASTClassEntity(
             parser=self.parser,
@@ -305,7 +318,7 @@ class DetectDirective(ast.NodeVisitor):
         self.wrapping_node = previous
 
     def extract_directives(
-        self, decorators: ast.AST, context: str
+        self, decorators: ast.AST
     ) -> Dict[str, List[Directive]]:
         directive_map = {}
         for node in decorators:
@@ -323,19 +336,7 @@ class DetectDirective(ast.NodeVisitor):
                     directive_map.setdefault(matched_directive[2], [])
                     directive_map[matched_directive[2]].append(directive)
 
-        self.check_constraint(config_map=self.config_map, directive_map=directive_map)
         return directive_map
-
-    def check_constraint(
-        self,
-        config_map: Dict[str, DirectiveConfig],
-        directive_map: Dict[str, List[Directive]],
-    ):
-        for name, directive_list in directive_map.items():
-            if (not config_map[name].allow_multiple) and (len(directive_list) > 1):
-                raise ValueError(
-                    f"Directive {name} does not allow multiple instances on one entity"
-                )
 
     def directive_lookup(
         self, name: str
