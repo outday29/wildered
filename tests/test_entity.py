@@ -8,14 +8,15 @@ from pydantic import Field, ValidationError
 
 from wildered.ast_parser import ASTDirectiveParser, ASTSourceCode
 from wildered.directive import BaseDirectiveConfig, Directive
+from wildered.models import BaseDirectiveParser
 from wildered.utils import read_file, write_file
 
-from .utils import hello_ast_parser, popcorn_ast_parser
+from .utils import world_ast_parser, popcorn_ast_parser
 
-
-def test_unparse(popcorn_ast_parser: ASTDirectiveParser):
+@pytest.mark.parametrize("parser", [popcorn_ast_parser])
+def test_unparse(parser: BaseDirectiveParser):
     source = ASTSourceCode.from_file("./tests/example_scripts/basic.py")
-    entity_list = popcorn_ast_parser.parse(source=source, drop_directive=False)
+    entity_list = parser.parse(source=source, drop_directive=False)
 
     # Try out different combinations
     # Unparse module
@@ -63,10 +64,11 @@ def test_unparse(popcorn_ast_parser: ASTDirectiveParser):
     # )
 
 
-def test_parser_drop_directive(popcorn_ast_parser: ASTDirectiveParser):
+@pytest.mark.parametrize("parser", [popcorn_ast_parser])
+def test_parser_drop_directive(parser: BaseDirectiveParser):
     source = ASTSourceCode.from_file("./tests/example_scripts/basic.py")
     # drop_directive default to True
-    entity_list = popcorn_ast_parser.parse(source=source)
+    entity_list = parser.parse(source=source)
     module_entity = entity_list[0]
     assert module_entity.unparse() == read_file("./tests/expected_scripts/module.py")
     # write_file(
@@ -74,12 +76,12 @@ def test_parser_drop_directive(popcorn_ast_parser: ASTDirectiveParser):
     #     module_entity.unparse(),
     # )
 
-
-def test_update_code(popcorn_ast_parser: ASTDirectiveParser):
+@pytest.mark.parametrize("parser", [popcorn_ast_parser])
+def test_update_code(parser: BaseDirectiveParser):
     orig = read_file("./tests/example_scripts/basic.py")
 
     source = ASTSourceCode.from_file("./tests/example_scripts/basic.py")
-    entity_list = popcorn_ast_parser.parse(source=source)
+    entity_list = parser.parse(source=source)
     new_function_code = read_file("./tests/example_scripts/new_function.py")
     new_class_code = read_file("./tests/example_scripts/new_class.py")
     new_method_code = read_file("./tests/example_scripts/new_method.py")

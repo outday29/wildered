@@ -2,7 +2,9 @@ import hello
 import popcorn
 import there
 
-popcorn.run(popcorn.pop(requirement="This is file level"), popcorn.hurray(dummy="Ok"))
+popcorn.run(popcorn.pop(requirement="This is file level"), 
+            popcorn.hurray(dummy="Ok"),
+            popcorn.function_only(dummy="dummy"))
 
 
 @popcorn.function_only(dummy="This is required field")

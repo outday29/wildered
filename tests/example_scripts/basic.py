@@ -8,7 +8,7 @@ popcorn.run(popcorn.pop(requirement="This is file level"), popcorn.hurray(dummy=
 @popcorn.hurray(dummy="This is required field")
 @popcorn.pop(
     requirement="Please complete this function",
-    test_dict={"hello": [world, 0x382]},
+    test_dict={"hello": [world, 0x382], "there": 0.1},
     some_list=[{"hello": there}, 123, [12, 124], True],
 )
 def dummy_function_1(param1: int, param2: str) -> None:

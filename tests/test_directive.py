@@ -8,13 +8,13 @@ from pydantic import Field, ValidationError
 from wildered.ast_parser.directive_parser import ASTDirectiveParser
 from wildered.ast_parser.source_code import ASTSourceCode
 from wildered.directive import BaseDirectiveConfig, Directive
+from wildered.models import BaseDirectiveParser
+from .utils import popcorn_ast_parser, world_ast_parser
 
-from .utils import hello_ast_parser, popcorn_ast_parser
-
-
-def test_basic(popcorn_ast_parser: ASTDirectiveParser):
+@pytest.mark.parametrize("parser", [popcorn_ast_parser])
+def test_basic(parser: BaseDirectiveParser):
     source = ASTSourceCode.from_file("./tests/example_scripts/basic.py")
-    entity_list = popcorn_ast_parser.parse(source=source, drop_directive=True)
+    entity_list = parser.parse(source=source, drop_directive=True)
     assert len(entity_list) == 5
     # NOTE: We can assume that the order is always from the start to the end of the file
     expected_name = [
@@ -28,24 +28,28 @@ def test_basic(popcorn_ast_parser: ASTDirectiveParser):
     for entity, expected_name in zip(entity_list, expected_name):
         assert entity.name == expected_name
 
-
-def test_validation(hello_ast_parser: ASTDirectiveParser):
-    world = hello_ast_parser
+@pytest.mark.parametrize("parser", [world_ast_parser])
+def test_validation(parser: BaseDirectiveParser):
+    world = world_ast_parser
 
     with pytest.raises(ValidationError):
         source = ASTSourceCode.from_file("./tests/example_scripts/invalid.py")
         world.parse(source=source, drop_directive=True)
 
 
-def test_allow_multiple(hello_ast_parser: ASTDirectiveParser):
-    world = hello_ast_parser
+@pytest.mark.parametrize("parser", [world_ast_parser])
+def test_allow_multiple(parser: BaseDirectiveParser):
+    world = world_ast_parser
 
     with pytest.raises(ValueError):
         source = ASTSourceCode.from_file("./tests/example_scripts/allow_multiple.py")
         world.parse(source=source, drop_directive=True)
 
-def test_function_only(popcorn_ast_parser: ASTDirectiveParser):
-    pass
+# def test_function_only(popcorn_ast_parser: ASTDirectiveParser):
+#     popcorn = popcorn_ast_parser
+#     with pytest.raises(ValueError):
+#         source = ASTSourceCode.from_file("./tests/example_scripts/invalid_constraint.py")
+#         popcorn.parse(source=source, drop_directive=True)
 
 
 def test_invalid_directive():
