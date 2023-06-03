@@ -24,7 +24,7 @@ from wildered.ast_parser.utils import (
     locate_function,
 )
 from wildered.directive import Directive, DirectiveConfig, DirectiveContext, Identifier
-from wildered.models import BaseDirectiveParser
+from wildered.models import BaseDirectiveParser, BaseEntity
 
 from .source_code import ASTSourceCode
 from .utils import (
@@ -54,11 +54,8 @@ class ASTDirectiveParser(BaseDirectiveParser):
         self.check_valid_combination(entity_list = detector.detected)
         return detector.detected
 
-    class Config:
-        arbitrary_types_allowed = True
 
-
-class ASTEntity(BaseModel, ABC):
+class ASTEntity(BaseEntity):
     wrapping_node: Optional[ASTEntity]
     node: ast.AST
     name: str
@@ -110,16 +107,6 @@ class ASTEntity(BaseModel, ABC):
         else:
             return ast_comments.unparse(node)
 
-    @property
-    def ancestor(self) -> List[ASTEntity]:
-        ancestor_list = []
-        cur_node = self
-        while cur_node.wrapping_node is not None:
-            ancestor_list.append(cur_node.wrapping_node)
-            cur_node = cur_node.wrapping_node
-
-        return ancestor_list
-
 
 class ASTClassEntity(ASTEntity):
     node: ast.ClassDef
@@ -154,7 +141,6 @@ class ASTFunctionEntity(ASTEntity):
 
 
 class ASTModuleEntity(ASTEntity):
-    _idx: int  # The index for holding the location of the file level directive
     _context = "module"
 
     @validator("wrapping_node")
@@ -163,6 +149,8 @@ class ASTModuleEntity(ASTEntity):
             raise ValueError(
                 "ASTModuleEntity should not have wrapping_node, make sure the run directive is defined at top level."
             )
+        
+        return v
 
     def update(self, new_code: ast.Module) -> None:
         self.node.body = new_code.body

@@ -29,7 +29,7 @@ EntityMap: TypeAlias = Dict[
 ]
 
 
-class ASTSourceCode(BaseModel):
+class ASTSourceCode(BaseSourceCode):
     """
     A class that parses a given Python script and facilitates mmanipulation of components
     such as function and docstrings in the script.
@@ -39,9 +39,6 @@ class ASTSourceCode(BaseModel):
     node: ast.AST
     filename: Optional[Path] = None
     _entity_map: Optional[EntityMap] = PrivateAttr(default=None)
-
-    class Config:
-        arbitrary_types_allowed = True
 
     def get_import_statement(
         self,

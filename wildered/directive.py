@@ -1,6 +1,6 @@
 import ast
 import inspect
-from typing import ClassVar, List, Literal, Optional, Set, TypeAlias
+from typing import TYPE_CHECKING, ClassVar, Dict, List, Literal, Optional, Set, TypeAlias
 
 from pydantic import BaseModel, Field, root_validator, validator
 from pydantic.dataclasses import dataclass
@@ -41,9 +41,9 @@ class BaseDirectiveConfig(object):
     
     @root_validator()
     def compatible_requires_conflict(cls, values):
-        if values["requires"] and values["conflict"]:
+        if values["requires"] and values["resists"]:
             for i in values["requires"]:
-                if i in values["conflict"]:
+                if i in values["resists"]:
                     raise ValueError(f"{i} is in both requires and conflict list.")
                 
         return values
