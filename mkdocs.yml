@@ -1,0 +1,35 @@
+site_name: Wildered Docs
+site_description: Hello world
+repo_url: https://github.com/outday29/wildered/tree/master
+theme:
+  name: "material"
+  features:
+    - content.code.copy
+  palette: 
+    - scheme: default
+      primary: brown
+      accent: deep orange
+      toggle: 
+        icon: material/weather-sunny
+        name: Switch to dark mode
+    - scheme: slate
+      primary: brown
+      accent: deep orange
+      toggle: 
+        icon: material/weather-night
+        name: Switch to light mode
+
+plugins:
+  - mkdocstrings
+  - search:
+      lang: en
+  - git-revision-date-localized:
+      type: date
+
+markdown_extensions:
+  - footnotes
+
+nav:
+  - Welcome: index.md
+  - Tutorials: tutorials.md
+  - References: references.md

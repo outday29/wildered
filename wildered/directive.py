@@ -1,15 +1,19 @@
+from abc import ABC
 import ast
 import inspect
 from typing import TYPE_CHECKING, ClassVar, Dict, List, Literal, Optional, Set, TypeAlias
 
 from pydantic import BaseModel, Field, root_validator, validator
 from pydantic.dataclasses import dataclass
+import libcst as cst
 
 
 DirectiveContext: TypeAlias = Literal["module", "class", "function"]
 
 class Identifier(BaseModel):
-    node: ast.Expr | ast.Name
+    """A wrapper around variable-like names
+    """
+    node: ast.Expr | ast.Name | cst.Expr | cst.Name
     name: str
 
     class Config:
@@ -71,7 +75,9 @@ def get_config_object(cls):
 DirectiveConfig = dataclass(BaseDirectiveConfig).__pydantic_model__
 
 
-class Directive(BaseModel):
+class Directive(BaseModel, ABC):
+    """Base class for holding directives
+    """
     _name: str  # What is the actual directive name used
     class_config: ClassVar[Optional[DirectiveConfig]] = None
 

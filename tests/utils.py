@@ -5,6 +5,7 @@ import pytest
 from pydantic import Field, ValidationError
 
 from wildered.ast_parser import ASTDirectiveParser, ASTSourceCode
+from wildered.cst_parser.directive_parser import CSTDirectiveParser
 from wildered.directive import BaseDirectiveConfig, Directive, Identifier
 
 
@@ -28,6 +29,7 @@ class Hurray(Directive):
         name = "hurray"
 
 popcorn_ast_parser = ASTDirectiveParser(prefix_name="popcorn", directives=[Pop, Hurray])
+popcorn_cst_parser = CSTDirectiveParser(prefix_name="popcorn", directives=[Pop, Hurray])
 
 class Hello(Directive):
     requirement: str = ""
@@ -81,3 +83,4 @@ class Singleton(Directive):
         allow_multiple = False
 
 world_ast_parser = ASTDirectiveParser(prefix_name="world", directives=[Hello, World, Singleton, ModuleOnly, FunctionOnly])
+world_cst_parser = CSTDirectiveParser(prefix_name="world", directives=[Hello, World, Singleton, ModuleOnly, FunctionOnly])

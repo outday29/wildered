@@ -9,7 +9,7 @@ from wildered.ast_parser.directive_parser import ASTDirectiveParser
 from wildered.ast_parser.source_code import ASTSourceCode
 from wildered.directive import BaseDirectiveConfig, Directive
 from wildered.models import BaseDirectiveParser
-from .utils import popcorn_ast_parser, world_ast_parser
+from .utils import popcorn_ast_parser, world_ast_parser, popcorn_cst_parser, world_cst_parser
 
 @pytest.mark.parametrize("parser", [popcorn_ast_parser])
 def test_basic(parser: BaseDirectiveParser):
@@ -45,11 +45,12 @@ def test_allow_multiple(parser: BaseDirectiveParser):
         source = ASTSourceCode.from_file("./tests/example_scripts/allow_multiple.py")
         world.parse(source=source, drop_directive=True)
 
-# def test_function_only(popcorn_ast_parser: ASTDirectiveParser):
-#     popcorn = popcorn_ast_parser
-#     with pytest.raises(ValueError):
-#         source = ASTSourceCode.from_file("./tests/example_scripts/invalid_constraint.py")
-#         popcorn.parse(source=source, drop_directive=True)
+@pytest.mark.xfail()
+def test_function_only(popcorn_ast_parser: ASTDirectiveParser):
+    popcorn = popcorn_ast_parser
+    with pytest.raises(ValueError):
+        source = ASTSourceCode.from_file("./tests/example_scripts/invalid_constraint.py")
+        popcorn.parse(source=source, drop_directive=True)
 
 
 def test_invalid_directive():
