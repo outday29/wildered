@@ -1,5 +1,7 @@
-from typing import List, Optional, Union
+from typing import List, Optional
+
 import libcst as cst
+
 
 class CSTDropImplementation(cst.CSTTransformer):
     def __init__(self, exception: List[str]) -> None:
@@ -8,7 +10,6 @@ class CSTDropImplementation(cst.CSTTransformer):
     def visit_FunctionDef(self, node: cst.FunctionDef):
         func_name = node.name.value
         if func_name in self.exception:
-            self.generic_visit(node)
             return node
 
         else:
@@ -30,12 +31,10 @@ class CSTDropDirective(cst.CSTTransformer):
 
     def visit_FunctionDef(self, node: cst.FunctionDef) -> cst.FunctionDef:
         node.decorators = filter(self.filter_directive, node.decorators)
-        self.generic_visit(node)
         return node
 
     def visit_ClassDef(self, node: cst.ClassDef) -> cst.ClassDef:
         node.decorators = filter(self.filter_directive, node.decorators)
-        self.generic_visit(node)
         return node
 
     def visit_Expr(self, node: cst.Expr) -> Optional[cst.Expr]:
@@ -44,8 +43,7 @@ class CSTDropDirective(cst.CSTTransformer):
             if (prefix == self.prefix) and (node_name == "run"):
                 return None
 
-        except AttributeError as e:
-            self.generic_visit(node)
+        except AttributeError:
             return node
 
     def visit_Import(self, node: cst.Import) -> Optional[cst.Import]:

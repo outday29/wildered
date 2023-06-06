@@ -1,19 +1,22 @@
 from __future__ import annotations
+
 import copy
 from pathlib import Path
-from typing import List, Optional
-from wildered.cst_parser.utils import CSTDropDirective, CSTDropImplementation
-from wildered.models import BaseSourceCode
+from typing import Any, List, Optional
+
 import libcst as cst
 
-from wildered.utils import read_file
+from wildered.cst.utils import CSTDropDirective, CSTDropImplementation
+from wildered.models import BaseSourceCode
+from wildered.utils import read_file, write_file
+
 
 class CSTSourceCode(BaseSourceCode):
-    node: cst.Module
-    filename: Path
+    node: Any # Bad things happen when I change to cst.Module
+    filename: Path        
     
     def __str__(self) -> str:
-        return cst.unparse(self.node)
+        return self.node.code
     
     def unparse(
         self,
@@ -66,29 +69,33 @@ class CSTSourceCode(BaseSourceCode):
         else:
             return node.code
     
-    def get_import_statement(
-        self,
-        drop_directive: bool = False,
-        directive_prefix: str = "",
-        relative_only: bool = False,
-    ) -> str:
-        """
-        Return the leading import statements (statements that are placed at the top of the file)
-        in string format
-        """
-        import_list = extract_import_list(
-            self.node,
-            drop_directive=drop_directive,
-            directive_prefix=directive_prefix,
-            relative_only=relative_only,
-        )
-        import_strings = [cst.unparse(node) for node in import_list]
+    # def get_import_statement(
+    #     self,
+    #     drop_directive: bool = False,
+    #     directive_prefix: str = "",
+    #     relative_only: bool = False,
+    # ) -> str:
+    #     """
+    #     Return the leading import statements (statements that are placed at the top of the file)
+    #     in string format
+    #     """
+    #     import_list = extract_import_list(
+    #         self.node,
+    #         drop_directive=drop_directive,
+    #         directive_prefix=directive_prefix,
+    #         relative_only=relative_only,
+    #     )
+    #     import_strings = [cst.unparse(node) for node in import_list]
 
-        # Combine the import strings into a single string
-        return "\n".join(import_strings)
+    #     # Combine the import strings into a single string
+    #     return "\n".join(import_strings)
     
     @classmethod
     def from_file(cls, filename: str) -> CSTSourceCode:
         content = read_file(filename)
         node = cst.parse_module(content)
         return cls(node=node, filename=filename)
+    
+    def save(self, filename: Optional[str] = None) -> None:
+        filename = filename if filename else self.filename
+        write_file(filename, self.node.code)

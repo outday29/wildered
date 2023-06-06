@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import ast
 import copy
-from abc import ABC
 from typing import (
     Annotated,
     Any,
@@ -14,16 +13,16 @@ from typing import (
 )
 
 import ast_comments
-from pydantic import BaseModel, validator
+from pydantic import validator
 from typing_extensions import assert_never
 
-from wildered.ast_parser.utils import (
+from wildered.ast.utils import (
     DropDirective,
     DropImplementation,
     get_call_name,
     locate_function,
 )
-from wildered.directive import Directive, DirectiveConfig, DirectiveContext, Identifier
+from wildered.directive import Directive, DirectiveContext, Identifier
 from wildered.models import BaseDirectiveParser, BaseEntity
 
 from .source_code import ASTSourceCode
@@ -44,7 +43,7 @@ class ASTDirectiveParser(BaseDirectiveParser):
             code=source.node,
             prefix=self.prefix_name,
         )
-
+        
         detector.visit(source.node)
 
         if drop_directive:
@@ -200,14 +199,14 @@ def extract_value(node: ast.AST):
         case other:
             assert_never(other)
 
-def extract_dict(node):
+def extract_dict(node: ast.Dict):
     return {
         extract_value(key): extract_value(value)
         for key, value in zip(node.keys, node.values)
     }
 
 
-def extract_list(node):
+def extract_list(node: ast.List):
     return [extract_value(elt) for elt in node.elts]
 
 
@@ -257,7 +256,7 @@ class DetectDirective(ast.NodeVisitor):
                     )
                     self.detected.append(node_task)
 
-        except AttributeError as e:
+        except AttributeError:
             pass
 
         finally:

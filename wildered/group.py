@@ -1,7 +1,9 @@
 from typing import Annotated, Callable, Sequence
+
 from pydantic import BaseModel
 
 from wildered.models import BaseEntity
+
 
 class EntityGroup(BaseModel):
     group_name: str

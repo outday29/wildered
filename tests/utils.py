@@ -1,11 +1,9 @@
-import ast
-from typing import List, Optional
+from typing import Optional
 
-import pytest
-from pydantic import Field, ValidationError
+from pydantic import Field
 
-from wildered.ast_parser import ASTDirectiveParser, ASTSourceCode
-from wildered.cst_parser.directive_parser import CSTDirectiveParser
+from wildered.ast import ASTDirectiveParser
+from wildered.cst.directive_parser import CSTDirectiveParser
 from wildered.directive import BaseDirectiveConfig, Directive, Identifier
 
 
@@ -57,7 +55,7 @@ class FunctionOnly(Directive):
         name = "function_only"
         allowed_context = {"function"}
         requires = {"hello"}
-        resists = {"World"}
+        resists = {"world"}
         allow_multiple = False
 
 class ModuleOnly(Directive):

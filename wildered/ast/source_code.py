@@ -7,9 +7,9 @@ from pathlib import Path
 from typing import Annotated, Dict, List, Optional, TypeAlias
 
 import ast_comments
-from pydantic import BaseModel, PrivateAttr
+from pydantic import PrivateAttr
 
-from wildered.ast_parser.utils import (
+from wildered.ast.utils import (
     DropDirective,
     DropImplementation,
     ReplaceNode,
@@ -90,7 +90,7 @@ class ASTSourceCode(BaseSourceCode):
             replace_transformer = ReplaceNode(
                 method_to_replace={class_name: {func_name: new_method}}
             )
-        except ValueError as e:
+        except ValueError:
             new_method = locate_function(ast_obj=new_code, func_name=func_name)
             replace_transformer = ReplaceNode(
                 method_to_replace={class_name: {func_name: new_method}}

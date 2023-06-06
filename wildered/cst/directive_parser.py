@@ -1,17 +1,22 @@
 from __future__ import annotations
+
+import copy
 from typing import Annotated, Any, Dict, List, Optional, Tuple, Type
+
+import libcst as cst
+from pydantic import validator
 from typing_extensions import assert_never
 
-from pydantic import validator
-from wildered.ast_parser.directive_parser import ASTDirectiveParser
-from wildered.cst_parser.source_code import CSTSourceCode
-from wildered.cst_parser.utils import CSTDropDirective, get_call_name
+from wildered.cst.source_code import CSTSourceCode
+from wildered.cst.utils import (
+    CSTDropDirective,
+    get_call_name,
+)
 from wildered.directive import Directive, DirectiveContext, Identifier
-from wildered.models import BaseEntity
-import libcst as cst
+from wildered.models import BaseDirectiveParser, BaseEntity
 
 
-class CSTDirectiveParser(ASTDirectiveParser):
+class CSTDirectiveParser(BaseDirectiveParser):
     def parse(self, source: CSTSourceCode, drop_directive: bool = True) -> List[CSTEntity]:
         detector = CSTDetectDirective(
                     parser=self,
@@ -21,23 +26,43 @@ class CSTDirectiveParser(ASTDirectiveParser):
                     prefix=self.prefix_name,
                 )
         
-        detector.visit(source.node)
+        source.node.visit(detector)
 
         if drop_directive:
             drop_transformer = CSTDropDirective(prefix=self.prefix_name)
-            drop_transformer.visit(source.node)
+            source.node.visit(drop_transformer)
 
         self.check_valid_combination(entity_list = detector.detected)
         return detector.detected
     
 class CSTEntity(BaseEntity):
     wrapping_node: Optional[CSTEntity]
-    node: cst.CSTNode
+    node: Any
     name: str
     source: CSTSourceCode
     directives: Dict[str, List[Directive]]
-    parser: ASTDirectiveParser
+    parser: CSTDirectiveParser
     _context: DirectiveContext
+    
+    def unparse(
+        self,
+        drop_directive: bool = False,
+        drop_implementation: bool = False,
+        return_global_import: bool = False,
+        include_ancestor: bool = False,
+    ) -> str:
+        if include_ancestor:
+            # Top ancestor
+            node = copy.deepcopy(self.ancestor[-1].node)
+
+        else:
+            node = copy.deepcopy(self.node)
+
+        return self.source._unparse(node=node, 
+                                    drop_directive=drop_directive, 
+                                    directive_prefix=self.parser.prefix_name, 
+                                    return_global_import=return_global_import, 
+                                    drop_implementation=drop_implementation)
     
 class CSTFunctionEntity(CSTEntity):
     _context = "function"
@@ -49,6 +74,9 @@ class CSTFunctionEntity(CSTEntity):
                 "ASTModuleEntity should not have wrapping_node, make sure the run directive is defined at top level."
             )
             
+    def update(self, new_code: str) -> None:
+        pass
+    
 class CSTModuleEntity(CSTEntity):
     _context = "module"
     
@@ -61,12 +89,15 @@ class CSTModuleEntity(CSTEntity):
         
         return v
     
-    def update(self, new_code) -> None:
+    def update(self, new_code: str) -> None:
         pass
     
 class CSTClassEntity(CSTEntity):
     _context = "class"
     
+    
+    def update(self, new_code: str) -> None:
+        pass
 
 class CSTDetectDirective(cst.CSTVisitor):
     # Go through the node, return a list of task
@@ -114,11 +145,8 @@ class CSTDetectDirective(cst.CSTVisitor):
                     )
                     self.detected.append(node_task)
 
-        except AttributeError as e:
+        except AttributeError:
             pass
-
-        finally:
-            self.generic_visit(node)
 
     def visit_FunctionDef(self, node: cst.FunctionDef) -> Any:
         directives = self.extract_directives(
@@ -129,7 +157,7 @@ class CSTDetectDirective(cst.CSTVisitor):
             source=self.source,
             wrapping_node=self.wrapping_node,
             node=node,
-            name=node.name,
+            name=node.name.value,
             directives=directives,
         )
 
@@ -138,7 +166,6 @@ class CSTDetectDirective(cst.CSTVisitor):
 
         previous = self.wrapping_node
         self.wrapping_node = node_task
-        self.generic_visit(node=node)
         self.wrapping_node = previous
 
     def visit_ClassDef(self, node: cst.ClassDef) -> Any:
@@ -150,7 +177,7 @@ class CSTDetectDirective(cst.CSTVisitor):
             source=self.source,
             wrapping_node=self.wrapping_node,
             node=node,
-            name=node.name,
+            name=node.name.value,
             directives=directives,
         )
 
@@ -159,14 +186,13 @@ class CSTDetectDirective(cst.CSTVisitor):
 
         previous = self.wrapping_node
         self.wrapping_node = node_task
-        self.generic_visit(node=node)
         self.wrapping_node = previous
 
     def extract_directives(
         self, decorators: List[cst.Decorator]
     ) -> Dict[str, List[Directive]]:
         directive_map = {}
-        decorator_obj = [decorator.decorator for decorator in decorators]
+        [decorator.decorator for decorator in decorators]
         for node in decorators:
             if isinstance(node, cst.Call):
                 prefix_name, name = get_call_name(node)

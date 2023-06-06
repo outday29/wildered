@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from abc import ABC, abstractclassmethod
 from typing import Any, Dict, List, Optional, Sequence, Type
 

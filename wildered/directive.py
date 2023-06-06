@@ -1,12 +1,18 @@
-from abc import ABC
 import ast
 import inspect
-from typing import TYPE_CHECKING, ClassVar, Dict, List, Literal, Optional, Set, TypeAlias
+from abc import ABC
+from typing import (
+    ClassVar,
+    List,
+    Literal,
+    Optional,
+    Set,
+    TypeAlias,
+)
 
+import libcst as cst
 from pydantic import BaseModel, Field, root_validator, validator
 from pydantic.dataclasses import dataclass
-import libcst as cst
-
 
 DirectiveContext: TypeAlias = Literal["module", "class", "function"]
 
@@ -35,6 +41,9 @@ class BaseDirectiveConfig(object):
     def set_default_context(cls, v):
         if not v:
             return {"module", "class", "function"}
+        
+        else:
+            return v
 
     @root_validator()
     def set_default_alias(cls, values):
@@ -95,7 +104,7 @@ class Directive(BaseModel, ABC):
                     values[positional_order[i]] = values["args"][i]
 
                 except IndexError:
-                    raise ValueError(f"Positional arguments number exceed")
+                    raise ValueError("Positional arguments number exceed")
 
         return values
 

@@ -1,9 +1,11 @@
-from wildered.ast_parser.directive_parser import ASTDirectiveParser
-from wildered.ast_parser.source_code import ASTSourceCode
+import pytest
+
+from wildered.ast.source_code import ASTSourceCode
 from wildered.group import EntityGrouper
 from wildered.models import BaseDirectiveParser, BaseEntity
-import pytest
+
 from .utils import popcorn_ast_parser
+
 
 @pytest.mark.parametrize("parser", [popcorn_ast_parser])
 def test_group(parser: BaseDirectiveParser):

@@ -1,17 +1,13 @@
-import ast
 import tempfile
-from pprint import pprint
-from typing import Optional
 
 import pytest
-from pydantic import Field, ValidationError
 
-from wildered.ast_parser import ASTDirectiveParser, ASTSourceCode
-from wildered.directive import BaseDirectiveConfig, Directive
+from wildered.ast import ASTSourceCode
 from wildered.models import BaseDirectiveParser
-from wildered.utils import read_file, write_file
+from wildered.utils import read_file
 
-from .utils import world_ast_parser, popcorn_ast_parser
+from .utils import popcorn_ast_parser
+
 
 @pytest.mark.parametrize("parser", [popcorn_ast_parser])
 def test_unparse(parser: BaseDirectiveParser):

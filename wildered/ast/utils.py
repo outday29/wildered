@@ -89,7 +89,7 @@ class DropDirective(ast.NodeTransformer):
             if (prefix == self.prefix) and (node_name == "run"):
                 return None
 
-        except AttributeError as e:
+        except AttributeError:
             self.generic_visit(node)
             return node
 
