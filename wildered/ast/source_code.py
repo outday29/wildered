@@ -121,15 +121,11 @@ class ASTSourceCode(BaseSourceCode):
         code = ast_comments.parse(new_code)
         existing_import_list = extract_import_list(self.node)
         new_import_list = extract_import_list(code)
-        new_import, modified_import = diff_import_list(
+        new_import = diff_import_list(
             existing_import_list, new_import_list
         )
-        # TODO: For now we insert the modified_import first
         for i in new_import:
-            self.node.body.insert(1, i)
-
-        for i in modified_import:
-            self.node.body.insert(1, i)
+            self.node.body.insert(0, i)
 
     def get_function(
         self,

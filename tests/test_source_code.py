@@ -1,3 +1,4 @@
+import tempfile
 
 import pytest
 
@@ -56,3 +57,18 @@ def test_entity_map():
     source = ASTSourceCode.from_file("./tests/example_scripts/allow_multiple.py")
     map = source.get_entity_map()
     print(map)
+
+
+@pytest.mark.parametrize("parser", [popcorn_ast_parser])
+def test_update_imports(parser: BaseDirectiveParser):
+    orig = read_file("./tests/example_scripts/old_imports.py")
+    
+    source = ASTSourceCode.from_file("./tests/example_scripts/old_imports.py")
+    new_file = read_file("./tests/example_scripts/new_imports.py")
+    source.update_import_statement(new_file)
+    # source.save("./tests/expected_scripts/updated_imports.py")
+    
+    assert read_file("./tests/example_scripts/old_imports.py") == orig
+    with tempfile.NamedTemporaryFile() as f:
+        source.save(f.name)
+        assert read_file(f.name) == read_file("./tests/expected_scripts/updated_imports.py")

@@ -1,6 +1,8 @@
 import ast
 from typing import Dict, List, Optional, Tuple, Union
 
+from typing_extensions import assert_never
+
 
 def get_call_name(call_node: ast.Call) -> str:
     if hasattr(call_node.func, "id"):
@@ -28,16 +30,42 @@ def locate_import(
             for name in imp.names:
                 if name.name == keyword:
                     return imp
-        elif isinstance(imp, ast.ImportFrom) and imp.module == keyword:
-            return imp
+                
+        elif isinstance(imp, ast.ImportFrom):
+            continue
+        
+        else:
+            assert_never(imp)
 
     return None
 
+def locate_import_from(imports: List[Union[ast.Import, ast.ImportFrom]], keyword: str, level: int
+) -> Optional[ast.ImportFrom]:
+    for imp in imports:
+        if isinstance(imp, ast.Import):
+            continue
+        
+        elif isinstance(imp, ast.ImportFrom):
+            if imp.module == keyword and imp.level == level:
+                return imp
+        
+        else:
+            assert_never(imp)
+            
+    return None
+
+def integrate_alias(old_aliases: List[ast.alias], new_aliases: List[ast.alias]) -> None:
+    old_alias_names = [i.name for i in old_aliases]
+    def is_new_alias(alias: ast.alias) -> bool:
+        return not(alias.name in old_alias_names)
+
+    new_alias_list = filter(is_new_alias, new_aliases)
+    old_aliases.extend(new_alias_list)
 
 def diff_import_list(
     old_imports: List[Union[ast.Import, ast.ImportFrom]],
     new_imports: List[Union[ast.Import, ast.ImportFrom]],
-) -> Tuple[List[Union[ast.Import, ast.ImportFrom]], List[ast.ImportFrom]]:
+) -> List[Union[ast.Import, ast.ImportFrom]]:
     """Detects new or modified import statements in `new_imports` compared to `old_imports`.
     Args:
         old_imports: A list of `ast.Import` or `ast.ImportFrom` nodes representing the old import statements.
@@ -49,8 +77,8 @@ def diff_import_list(
     Raises:
         None.
     """
+    # Will modify the import from inplace if available.
     new_import_ast = []
-    modified_import_from_ast = []
 
     for i in new_imports:
         if isinstance(i, ast.Import):
@@ -58,15 +86,13 @@ def diff_import_list(
             if match is None:  # Meaning it is a new import
                 new_import_ast.append(i)
         elif isinstance(i, ast.ImportFrom):
-            match = locate_import(old_imports, i.module)
+            match = locate_import_from(old_imports, i.module, level=i.level)
             if match is None:  # New import
                 new_import_ast.append(i)
             else:
-                if match.level == i.level and match.module == i.module:
-                    # Compare the match and i, if they are not the same, it means it is modified
-                    modified_import_from_ast.append(i)
-
-    return new_import_ast, modified_import_from_ast
+                # TODO: Not elegant
+                integrate_alias(old_aliases=match.names, new_aliases=i.names)
+    return new_import_ast
 
 
 class DropDirective(ast.NodeTransformer):

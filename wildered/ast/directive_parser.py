@@ -43,14 +43,14 @@ class ASTDirectiveParser(BaseDirectiveParser):
             code=source.node,
             prefix=self.prefix_name,
         )
-        
+
         detector.visit(source.node)
 
         if drop_directive:
             drop_transformer = DropDirective(prefix=self.prefix_name)
             drop_transformer.visit(source.node)
 
-        self.check_valid_combination(entity_list = detector.detected)
+        self.check_valid_combination(entity_list=detector.detected)
         return detector.detected
 
 
@@ -111,32 +111,46 @@ class ASTClassEntity(ASTEntity):
     node: ast.ClassDef
     _context = "class"
 
-    def update(self, new_code: ast.ClassDef | str) -> None:
+    def update(
+        self,
+        new_code: ast.ClassDef | str,
+        modify_signature: bool = True,
+        name: Optional[str] = None,
+    ) -> None:
         if isinstance(new_code, str):
             new_code = ast_comments.parse(new_code)
-            new_code = locate_class(new_code, class_name=self.name)
+            new_code = locate_class(new_code, class_name=name if name else self.name)
 
         self.node.body = new_code.body
         self.node.decorator_list = new_code.decorator_list
-
-    def modify_signature(self, new_code: ast.ClassDef) -> None:
-        pass
+        
+        if modify_signature:
+            self.node.name = new_code.name
+            self.node.bases = new_code.bases
+            self.node.keywords = new_code.keywords
 
 
 class ASTFunctionEntity(ASTEntity):
     node: ast.FunctionDef
     _context = "function"
 
-    def update(self, new_code: ast.FunctionDef | str) -> None:
+    def update(
+        self,
+        new_code: ast.FunctionDef | str,
+        modify_signature: bool = True,
+        name: Optional[str] = None,
+    ) -> None:
         if isinstance(new_code, str):
             new_code = ast_comments.parse(new_code)
-            new_code = locate_function(new_code, func_name=self.name)
+            new_code = locate_function(new_code, func_name=name if name else self.name)
 
         self.node.body = new_code.body
         self.node.decorator_list = new_code.decorator_list
-
-    def modify_signature(self, new_code: ast.FunctionDef) -> None:
-        pass
+        
+        if modify_signature:
+            self.node.name = new_code.name
+            self.node.args = new_code.args
+            self.node.returns = new_code.returns
 
 
 class ASTModuleEntity(ASTEntity):
@@ -148,11 +162,15 @@ class ASTModuleEntity(ASTEntity):
             raise ValueError(
                 "ASTModuleEntity should not have wrapping_node, make sure the run directive is defined at top level."
             )
-        
+
         return v
 
-    def update(self, new_code: ast.Module) -> None:
-        self.node.body = new_code.body
+    def update(self, new_code: ast.Module | str) -> None:
+        if isinstance(new_code, str):
+            new_code = ast_comments.parse(new_code)
+
+        self.source.node = new_code
+        self.node = new_code
 
 
 ASTDirectiveParser.update_forward_refs()
@@ -177,27 +195,28 @@ def extract_value(node: ast.AST):
     match node:
         case ast.Constant():
             return node.value
-        
+
         case ast.Expr():
             return Identifier(node=node, name=node.value)
-        
+
         case ast.Dict():
             return extract_dict(node=node)
-        
+
         case ast.Name():
             return Identifier(node=node, name=node.id)
-        
+
         case ast.Str():
             return node.s
-        
+
         case ast.Num():
             return node.n
-        
+
         case ast.List():
             return extract_list(node)
-        
+
         case other:
             assert_never(other)
+
 
 def extract_dict(node: ast.Dict):
     return {
@@ -263,9 +282,7 @@ class DetectDirective(ast.NodeVisitor):
             self.generic_visit(node)
 
     def visit_FunctionDef(self, node: ast.FunctionDef) -> Any:
-        directives = self.extract_directives(
-            decorators=node.decorator_list
-        )
+        directives = self.extract_directives(decorators=node.decorator_list)
         node_task = ASTFunctionEntity(
             parser=self.parser,
             source=self.source,
@@ -304,9 +321,7 @@ class DetectDirective(ast.NodeVisitor):
         self.generic_visit(node=node)
         self.wrapping_node = previous
 
-    def extract_directives(
-        self, decorators: ast.AST
-    ) -> Dict[str, List[Directive]]:
+    def extract_directives(self, decorators: ast.AST) -> Dict[str, List[Directive]]:
         directive_map = {}
         for node in decorators:
             if isinstance(node, ast.Call):

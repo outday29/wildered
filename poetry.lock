@@ -321,7 +321,7 @@ i18n = ["Babel (>=2.7)"]
 name = "libcst"
 version = "1.0.0"
 description = "A concrete syntax tree with AST-like properties for Python 3.5, 3.6, 3.7, 3.8, 3.9, and 3.10 programs."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -595,7 +595,7 @@ mkdocstrings = ">=0.20"
 name = "mypy-extensions"
 version = "1.0.0"
 description = "Type system extensions for programs checked with the mypy type checker."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.5"
 files = [
@@ -828,7 +828,7 @@ files = [
 name = "pyyaml"
 version = "6.0"
 description = "YAML parser and emitter for Python"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 files = [
@@ -1088,7 +1088,7 @@ files = [
 name = "typing-inspect"
 version = "0.9.0"
 description = "Runtime inspection utilities for typing module."
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 files = [
@@ -1161,4 +1161,4 @@ watchmedo = ["PyYAML (>=3.10)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "56827550b92ea119cea8971122f5c79c15fa37bc91ab846d9b6967c908363b7a"
+content-hash = "2d52933692ef23586a9f9131a4e3dfd088cee2ad3f08d8061b6a16d234cf5715"
