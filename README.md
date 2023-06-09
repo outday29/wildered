@@ -1,6 +1,6 @@
 # Wildered
 
-`wildered` is an utility library for ??. It is used for tagging and modifying your source code through Python `ast` and `libcst`. 
+`wildered` is an utility library for my ongoing personal project. It is used for tagging and modifying your source code through Python `ast` and `libcst`. 
 
 ## Installation
 
@@ -12,5 +12,5 @@ pip install wildered
 
 ## Basic usage
 
-You can learn more in the official docs.
+Under development.
 
