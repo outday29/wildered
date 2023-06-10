@@ -1,4 +1,5 @@
 import ast
+from collections import defaultdict
 from typing import Dict, List, Optional, Tuple, Union
 
 from typing_extensions import assert_never
@@ -286,56 +287,29 @@ class NodeFinder(ast.NodeVisitor):
     def __init__(
         self,
         entity_list: Optional[List[str]] = None,
-        func_list: Optional[List[str]] = None,
-        class_list: Optional[List[str]] = None,
-        method_list: Optional[Dict[str, List[str]]] = None,
     ) -> None:
         """
         Initialize the NodeFinder class.
         Args:
-            entity_list (Optional[List[str]]): A list of entities to search for.
-            func_list (Optional[List[str]]): A list of function names to search for.
-            class_list (Optional[List[str]]): A list of class names to search for.
-            method_list (Optional[Dict[str, List[str]]]): A dictionary mapping class names to a list of method names.
+            entity_list: Optional[List[str]] = None
         """
         self.entity_list = entity_list if entity_list else []
-        self.func_list = func_list if func_list else []
-        self.class_list = class_list if class_list else []
-        self.method_list = method_list if method_list else {}
-        self.cur_class = None
-        self.pure = True
-        self.found_node = {}
+        self.found_node = defaultdict(lambda: None)
 
     def visit_FunctionDef(self, node):
-        if (
-            (node.name in self.entity_list)
-            or (node.name in self.func_list)
-            or (
-                self.cur_class
-                and (self.cur_class in self.method_list)
-                and (node.name in self.method_list[self.cur_class])
-            )
-        ):
+        if node.name in self.entity_list:
             self.found_node[node.name] = node
-
-        elif not self.cur_class:
-            self.pure = False
 
         self.generic_visit(node)
 
     def visit_ClassDef(self, node):
-        if (node.name in self.entity_list) or (node.name in self.class_list):
+        if node.name in self.entity_list:
             self.found_node[node.name] = node
 
-        elif node.name not in self.method_list:
-            self.pure = False
-
-        self.cur_class = node.name
         self.generic_visit(node)
-        self.cur_class = None
 
 
 def locate_entity(code: ast.AST, entity_name: str):
     finder = NodeFinder(entity_name)
     finder.visit(code)
-    return finder.found_node
+    return finder.found_node[entity_name]

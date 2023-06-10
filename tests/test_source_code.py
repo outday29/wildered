@@ -43,6 +43,10 @@ def test_locate(parser: BaseDirectiveParser):
     assert source.get_function(
         func_name="dummy_function_1", return_global_import=True
     ) == read_file("./tests/expected_scripts/get_function.py")
+    
+    assert source.get_entity(
+        entity_name="dummy_function_1", return_global_import=True
+    ) == read_file("./tests/expected_scripts/get_function.py")
 
     with pytest.raises(ValueError):
         # directive_prefix not specified

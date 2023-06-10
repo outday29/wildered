@@ -163,15 +163,13 @@ class ASTSourceCode(BaseSourceCode):
 
     def get_entity(
         self,
-        entity_path: List[str],
+        entity_name: str,
         drop_directive: bool = False,
         directive_prefix: str = "",
         drop_implementation: bool = False,
         return_global_import: bool = False,
     ) -> str:
-        entity_node: ast.AST = self.node
-        for i in entity_path:
-            entity_node = locate_entity(code=entity_node, entity_name=i)
+        entity_node: ast.AST = locate_entity(code=self.node, entity_name=entity_name)
 
         return self._unparse(
             node=entity_node,
