@@ -8,6 +8,7 @@ def dummy_function_1(param1: int, param2: str) -> None:
         param1 (int): The first parameter.
         param2 (str): The second parameter.
     """
+    # Implementation goes here
     a = 100
     b = 300
 
@@ -17,6 +18,7 @@ def dummy_function_2() -> bool:
     Returns:
         bool: The boolean result.
     """
+# Implementation goes here
 
 class DummyClass1:
     """This is a dummy class."""
@@ -28,6 +30,7 @@ class DummyClass1:
         Args:
             param (int): The parameter for initialization.
         """
+    # Implementation goes here
 
     def method_1(self) -> str:
         """This is a dummy method.
@@ -35,6 +38,7 @@ class DummyClass1:
         Returns:
             str: The string result.
         """
+# Implementation goes here
 
 class DummyClass2:
     """This is another dummy class."""
@@ -46,6 +50,7 @@ class DummyClass2:
         Args:
             param (str): The parameter for initialization.
         """
+    # Implementation goes here
 
     def method_2(self) -> int:
         """This is another dummy method.
@@ -53,3 +58,4 @@ class DummyClass2:
         Returns:
             int: The integer result.
         """
+# Implementation goes here

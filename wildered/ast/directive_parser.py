@@ -12,6 +12,7 @@ from typing import (
     Type,
 )
 
+import ast_comments
 from pydantic import validator
 from typing_extensions import assert_never
 
@@ -99,11 +100,11 @@ class ASTEntity(BaseEntity):
                     directive_prefix=self.parser.prefix_name,
                 )
                 + "\n\n"
-                + ast.unparse(node)
+                + ast_comments.unparse(node)
             )
 
         else:
-            return ast.unparse(node)
+            return ast_comments.unparse(node)
 
 
 class ASTClassEntity(ASTEntity):
@@ -117,7 +118,7 @@ class ASTClassEntity(ASTEntity):
         name: Optional[str] = None,
     ) -> None:
         if isinstance(new_code, str):
-            new_code = ast.parse(new_code)
+            new_code = ast_comments.parse(new_code)
             new_code = locate_class(new_code, class_name=name if name else self.name)
 
         self.node.body = new_code.body
@@ -140,7 +141,7 @@ class ASTFunctionEntity(ASTEntity):
         name: Optional[str] = None,
     ) -> None:
         if isinstance(new_code, str):
-            new_code = ast.parse(new_code)
+            new_code = ast_comments.parse(new_code)
             new_code = locate_function(new_code, func_name=name if name else self.name)
 
         self.node.body = new_code.body
@@ -166,7 +167,7 @@ class ASTModuleEntity(ASTEntity):
 
     def update(self, new_code: ast.Module | str) -> None:
         if isinstance(new_code, str):
-            new_code = ast.parse(new_code)
+            new_code = ast_comments.parse(new_code)
 
         self.source.node = new_code
         self.node = new_code

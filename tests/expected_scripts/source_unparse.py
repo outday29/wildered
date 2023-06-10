@@ -13,6 +13,7 @@ def dummy_function_2() -> bool:
 
 Returns:
     bool: The boolean result."""
+# Implementation goes here
 
 class DummyClass1:
     """This is a dummy class."""
@@ -23,12 +24,14 @@ class DummyClass1:
 
 Args:
     param (int): The parameter for initialization."""
+    # Implementation goes here
 
     def method_1(self) -> str:
         """This is a dummy method.
 
 Returns:
     str: The string result."""
+# Implementation goes here
 
 class DummyClass2:
     """This is another dummy class."""
@@ -39,9 +42,11 @@ class DummyClass2:
 
 Args:
     param (str): The parameter for initialization."""
+    # Implementation goes here
 
     def method_2(self) -> int:
         """This is another dummy method.
 
 Returns:
     int: The integer result."""
+# Implementation goes here

@@ -6,6 +6,7 @@ import pickle
 from pathlib import Path
 from typing import Annotated, Dict, List, Optional, TypeAlias
 
+import ast_comments
 from pydantic import PrivateAttr
 
 from wildered.ast.utils import (
@@ -55,13 +56,13 @@ class ASTSourceCode(BaseSourceCode):
             directive_prefix=directive_prefix,
             relative_only=relative_only,
         )
-        import_strings = [ast.unparse(node) for node in import_list]
+        import_strings = [ast_comments.unparse(node) for node in import_list]
 
         # Combine the import strings into a single string
         return "\n".join(import_strings)
 
     def __str__(self) -> str:
-        return ast.unparse(self.node)
+        return ast_comments.unparse(self.node)
 
     def update(self, class_to_replace, method_to_replace, function_to_replace):
         replacer = ReplaceNode(
@@ -73,7 +74,7 @@ class ASTSourceCode(BaseSourceCode):
 
     def update_function(self, new_code: str | ast.FunctionDef, func_name: str) -> None:
         if isinstance(new_code, str):
-            new_code = ast.parse(new_code)
+            new_code = ast_comments.parse(new_code)
             new_code = locate_function(ast_obj=new_code, func_name=func_name)
 
         replace_transformer = ReplaceNode(function_to_replace={func_name: new_code})
@@ -81,7 +82,7 @@ class ASTSourceCode(BaseSourceCode):
         ast.fix_missing_locations(self.node)
 
     def update_method(self, new_code: str, func_name: str, class_name: str) -> None:
-        new_code = ast.parse(new_code)
+        new_code = ast_comments.parse(new_code)
         try:
             new_method = locate_method(
                 ast_obj=new_code, func_name=func_name, class_name=class_name
@@ -99,7 +100,7 @@ class ASTSourceCode(BaseSourceCode):
 
     def update_class(self, new_code: str, class_name: str) -> None:
         if isinstance(new_code, str):
-            new_code = ast.parse(new_code)
+            new_code = ast_comments.parse(new_code)
             new_code = locate_class(ast_obj=new_code, class_name=class_name)
 
         replace_transformer = ReplaceNode(class_to_replace={class_name: new_code})
@@ -108,7 +109,7 @@ class ASTSourceCode(BaseSourceCode):
 
     def update_module(self, new_code: str | ast.Module) -> None:
         if isinstance(new_code, str):
-            new_code = ast.parse(new_code)
+            new_code = ast_comments.parse(new_code)
 
         self.node = new_code
 
@@ -117,7 +118,7 @@ class ASTSourceCode(BaseSourceCode):
         import_list should be a list of ast node
         replace the import lines in self.code to the one in import_list
         """
-        code = ast.parse(new_code)
+        code = ast_comments.parse(new_code)
         existing_import_list = extract_import_list(self.node)
         new_import_list = extract_import_list(code)
         new_import = diff_import_list(
@@ -258,15 +259,15 @@ class ASTSourceCode(BaseSourceCode):
                     drop_directive=drop_directive, directive_prefix=directive_prefix
                 )
                 + "\n\n"
-                + ast.unparse(node)
+                + ast_comments.unparse(node)
             )
 
         else:
-            return ast.unparse(node)
+            return ast_comments.unparse(node)
 
     def save(self, filename: Optional[str] = None) -> None:
         filename = filename if filename else self.filename
-        write_file(filename, ast.unparse(self.node))
+        write_file(filename, ast_comments.unparse(self.node))
 
     def serialize(self, output_file: str) -> None:
         with open(output_file, "wb") as f:
@@ -275,7 +276,7 @@ class ASTSourceCode(BaseSourceCode):
     @classmethod
     def from_file(cls, filename: str) -> ASTSourceCode:
         content = read_file(filename)
-        code = ast.parse(content)
+        code = ast_comments.parse(content)
         return cls(node=code, filename=filename)
 
     @classmethod

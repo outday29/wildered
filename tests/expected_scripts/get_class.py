@@ -8,6 +8,7 @@ class DummyClass1:
         Args:
             param (int): The parameter for initialization.
         """
+    # Implementation goes here
 
     def method_1(self) -> str:
         """This is a dummy method.
