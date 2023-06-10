@@ -4,7 +4,7 @@ import pytest
 
 from wildered.ast import ASTSourceCode
 from wildered.models import BaseDirectiveParser
-from wildered.utils import read_file
+from wildered.utils import read_file, write_file
 
 from .utils import popcorn_ast_parser, world_ast_parser
 

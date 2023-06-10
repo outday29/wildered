@@ -4,7 +4,7 @@ import pytest
 
 from wildered.ast import ASTSourceCode
 from wildered.models import BaseDirectiveParser
-from wildered.utils import read_file
+from wildered.utils import read_file, write_file
 
 from .utils import popcorn_ast_parser
 
@@ -17,39 +17,33 @@ def test_unparse(parser: BaseDirectiveParser):
     # Try out different combinations
     # Unparse module
     module_entity = entity_list[0]
-    assert module_entity.unparse(drop_directive=True) == read_file(
-        "./tests/expected_scripts/module.py"
-    )
     # write_file(
     #     "./tests/expected_scripts/module.py",
     #     module_entity.unparse(drop_directive=True),
     # )
+    assert module_entity.unparse(drop_directive=True) == read_file(
+        "./tests/expected_scripts/module.py"
+    )
 
     function_entity = entity_list[1]
-    assert function_entity.unparse(drop_implementation=True) == read_file(
-        "./tests/expected_scripts/function.py"
-    )
     # write_file(
     #     "./tests/expected_scripts/function.py",
     #     function_entity.unparse(drop_implementation=True),
     # )
+    assert function_entity.unparse(drop_implementation=True) == read_file(
+        "./tests/expected_scripts/function.py"
+    )
 
     class_entity = entity_list[3]
-    assert class_entity.unparse(
-        drop_directive=True, drop_implementation=True
-    ) == read_file("./tests/expected_scripts/class.py")
     # write_file(
     #     "./tests/expected_scripts/class.py",
     #     class_entity.unparse(drop_directive=True, drop_implementation=True),
     # )
+    assert class_entity.unparse(
+        drop_directive=True, drop_implementation=True
+    ) == read_file("./tests/expected_scripts/class.py")
 
     method_entity = entity_list[4]
-    assert method_entity.unparse(return_global_import=True) == read_file(
-        "./tests/expected_scripts/method.py"
-    )
-    assert method_entity.unparse(
-        drop_directive=True, include_ancestor=True
-    ) == read_file("./tests/expected_scripts/method_with_ancestor.py")
     # write_file(
     #     "./tests/expected_scripts/method.py",
     #     method_entity.unparse(return_global_import=True),
@@ -58,6 +52,12 @@ def test_unparse(parser: BaseDirectiveParser):
     #     "./tests/expected_scripts/method_with_ancestor.py",
     #     method_entity.unparse(drop_directive=True, include_ancestor=True),
     # )
+    assert method_entity.unparse(return_global_import=True) == read_file(
+        "./tests/expected_scripts/method.py"
+    )
+    assert method_entity.unparse(
+        drop_directive=True, include_ancestor=True
+    ) == read_file("./tests/expected_scripts/method_with_ancestor.py")
 
 
 @pytest.mark.parametrize("parser", [popcorn_ast_parser])

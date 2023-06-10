@@ -8,8 +8,6 @@ def dummy_function_1(new_param1: int, new_param2: str) -> int:
         param1 (int): The first parameter.
         param2 (str): The second parameter.
     """
-    # New function implementation
-    # The comments should still be preserved
     print(new_param1)
     a = new_param1 + 100
     for i in new_param2:
@@ -22,12 +20,10 @@ def dummy_function_2() -> bool:
     Returns:
         bool: The boolean result.
     """
-# Implementation goes here
 
 @dummy_decorator()
 class DummyClass1(object):
     """This is a dummy class."""
-    # This is the new class
     class_attribute_1 = 10
 
     def __init__(self, param: int) -> None:
@@ -44,7 +40,6 @@ class DummyClass1(object):
         Returns:
             str: The string result.
         """
-        # Implementation goes here
         a = 100
         b = 200
         c = a + b
@@ -52,7 +47,6 @@ class DummyClass1(object):
 
     def method_2(self) -> None:
         return None
-# Implementation goes here
 
 class DummyClass2:
     """This is another dummy class."""
@@ -64,12 +58,10 @@ class DummyClass2:
         Args:
             param (str): The parameter for initialization.
         """
-        # The comments should still be preserved
         a = 'hello'
         self.param = new_param_1
         print('This is the new class method')
         return None
-    # Implementation goes here
 
     def method_2(self) -> int:
         """This is another dummy method.
@@ -77,4 +69,3 @@ class DummyClass2:
         Returns:
             int: The integer result.
         """
-# Implementation goes here
