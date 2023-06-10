@@ -169,7 +169,7 @@ class ASTSourceCode(BaseSourceCode):
         return_global_import: bool = False,
     ) -> str:
         entity_node: ast.AST = locate_entity(code=self.node, entity_name=entity_name)
-    
+
         return self._unparse(
             node=entity_node,
             drop_directive=drop_directive,
