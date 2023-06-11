@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "wildered"
-version = "0.1.2"
+version = "0.1.4"
 description = ""
 authors = ["engkheng <ongengkheng929@gmail.com>"]
 license = "MIT"
@@ -30,7 +30,7 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poe.tasks]
-test = "pytest tests"
+test = "pytest tests -s"
 ruff-format = "ruff --select I --fix ."
 ruff-lint = "ruff ."
 black-format = "black ."

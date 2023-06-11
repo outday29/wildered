@@ -115,6 +115,9 @@ class DropDirective(ast.NodeTransformer):
             prefix, node_name = get_call_name(node.value)
             if (prefix == self.prefix) and (node_name == "run"):
                 return None
+            
+            else:
+                return node
 
         except AttributeError:
             self.generic_visit(node)
@@ -301,12 +304,16 @@ class NodeFinder(ast.NodeVisitor):
             self.found_node[node.name] = node
 
         self.generic_visit(node)
+        
+        return node
 
     def visit_ClassDef(self, node):
         if node.name in self.entity_list:
             self.found_node[node.name] = node
 
         self.generic_visit(node)
+        
+        return node
 
 
 def locate_entity(code: ast.AST, entity_name: str):
