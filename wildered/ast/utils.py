@@ -138,15 +138,16 @@ class DropDirective(ast.NodeTransformer):
             return node
 
     def filter_directive(self, decorator: Union[ast.Call, ast.Name]) -> bool:
-        if isinstance(decorator, ast.Name):
+        if isinstance(decorator, ast.Call):
+            prefix, node_name = get_call_name(decorator)
+
+            if prefix == self.prefix:
+                return False
+
             return True
 
-        prefix, node_name = get_call_name(decorator)
-
-        if prefix == self.prefix:
-            return False
-
-        return True
+        else:
+            return True
 
 
 class ReplaceNode(ast.NodeTransformer):
