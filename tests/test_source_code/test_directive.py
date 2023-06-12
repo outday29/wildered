@@ -17,7 +17,7 @@ from .utils import (
 
 @pytest.mark.parametrize(["parser", "source_code_cls"], [(popcorn_ast_parser, ASTSourceCode)])
 def test_basic(parser: BaseDirectiveParser, source_code_cls: BaseSourceCode):
-    source = source_code_cls.from_file("./tests/example_scripts/basic.py")
+    source = source_code_cls.from_file("./tests/test_source_code/example_scripts/basic.py")
     entity_list = parser.parse(source=source, drop_directive=True)
     assert len(entity_list) == 5
     # NOTE: We can assume that the order is always from the start to the end of the file
@@ -36,7 +36,7 @@ def test_validation(parser: BaseDirectiveParser):
     world = world_ast_parser
 
     with pytest.raises(ValidationError):
-        source = ASTSourceCode.from_file("./tests/example_scripts/invalid.py")
+        source = ASTSourceCode.from_file("./tests/test_source_code/example_scripts/invalid.py")
         world.parse(source=source, drop_directive=True)
 
 
@@ -45,29 +45,29 @@ def test_allow_multiple(parser: BaseDirectiveParser):
     world = world_ast_parser
 
     with pytest.raises(ValueError):
-        source = ASTSourceCode.from_file("./tests/example_scripts/allow_multiple.py")
+        source = ASTSourceCode.from_file("./tests/test_source_code/example_scripts/allow_multiple.py")
         world.parse(source=source, drop_directive=True)
 
 @pytest.mark.parametrize("parser", [world_ast_parser])
 def test_invalid_context(parser: BaseDirectiveParser):
     with pytest.raises(ValueError):
-        source = ASTSourceCode.from_file("./tests/example_scripts/invalid_context.py")
+        source = ASTSourceCode.from_file("./tests/test_source_code/example_scripts/invalid_context.py")
         parser.parse(source=source, drop_directive=True)
     
     with pytest.raises(ValueError):
-        source = ASTSourceCode.from_file("./tests/example_scripts/invalid_context_2.py")
+        source = ASTSourceCode.from_file("./tests/test_source_code/example_scripts/invalid_context_2.py")
         parser.parse(source=source, drop_directive=True)
 
 @pytest.mark.parametrize("parser", [world_ast_parser])
 def test_invalid_combination(parser: BaseDirectiveParser):
     with pytest.raises(ValueError) as excinfo:
-        source = ASTSourceCode.from_file("./tests/example_scripts/invalid_requires.py")
+        source = ASTSourceCode.from_file("./tests/test_source_code/example_scripts/invalid_requires.py")
         parser.parse(source=source)
     
     assert "requires directives" in str(excinfo.value)
         
     with pytest.raises(ValueError) as excinfo:
-        source = ASTSourceCode.from_file("./tests/example_scripts/invalid_resists.py")
+        source = ASTSourceCode.from_file("./tests/test_source_code/example_scripts/invalid_resists.py")
         parser.parse(source=source)
         
     assert "resists directives" in str(excinfo.value)
