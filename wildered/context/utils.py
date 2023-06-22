@@ -26,14 +26,14 @@ def temporary_workspace():
 def get_workspace_file() -> Path:
     """Returns a Path object representing an available workspace file path.
 
-    The function checks for the existence of workspace files in the ".butterfly" directory
+    The function checks for the existence of workspace files in the ".wildered" directory
     and returns a new file path that is not already in use. The file paths follow the pattern
     "workspace_X.md", where X is a unique number starting from 1.
 
     Returns:
         A Path object representing an available workspace file path.
     """
-    base_path = Path(".butterfly/")
+    base_path = Path(".wildered/")
     base_path.mkdir(exist_ok=True)
     file_prefix = "workspace"
     file_number = 1

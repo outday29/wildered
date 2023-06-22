@@ -2,10 +2,9 @@ from pathlib import Path
 from typing import Any, Dict, List, Literal
 
 import pyperclip
-from typing_extensions import assert_never
 
 from wildered.context.utils import temporary_workspace
-from wildered.utils import write_file
+from wildered.utils import read_file, write_file
 
 from .tasks import (
     TaskGroup,
@@ -15,12 +14,18 @@ from .tasks import (
 def task_executor(
     task_list: List[TaskGroup],
     clipboard: bool = False,
+    auto_integration: bool = False,
 ) -> None:
     for group in task_list:
-        autocomplete_group_manual(group=group, clipboard=clipboard)
+        final_prompt = format_task_prompt(group=group, clipboard=clipboard)
+        
+        # TODO: Complete this
+        if auto_integration:
+            response = get_llm_response(final_prompt)
+            # Proceed to integrate
 
 
-def autocomplete_group_manual(group: TaskGroup, clipboard: bool):
+def format_task_prompt(group: TaskGroup, clipboard: bool) -> str:
     prompt = group.format_prompt()
 
     if clipboard:
@@ -31,4 +36,9 @@ def autocomplete_group_manual(group: TaskGroup, clipboard: bool):
         write_file(f, prompt)
         print(f"Prompt wrote into {f}")
         print(f"Please replace it with the LLM responses.")
-        value = input("Press enter to exit. ")
+        _ = input("Press enter to exit. ")
+        return read_file(f)
+
+
+def get_llm_response(prompt: str):
+    pass

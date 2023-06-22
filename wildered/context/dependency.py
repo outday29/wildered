@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any, List, Optional
 
 from pydantic import BaseModel, Field, root_validator
-
+from wildered.logger import logger
 from wildered.ast import ASTSourceCode
 from wildered.directive import Identifier
 
@@ -46,7 +46,7 @@ class CodeDependency(Dependency):
             return self.source_code.get_entity(
                 entity_name=self.entity_name,
                 drop_directive=True,
-                directive_prefix="butterfly",
+                directive_prefix="wildered",
                 return_global_import=True,
             )
 
@@ -82,32 +82,40 @@ def infer_hint(
     for entity in hint_directive.entity_list:
         match entity:
             case Identifier():
-                if module_path := dependency_lookup.get(entity.name, None):
-                    code_dependency.append(
-                        CodeDependency(
-                            filepath=module_path,
-                            entity_name=entity.name,
+                try:
+                    if module_path := dependency_lookup.get(entity.name, None):
+                        code_dependency.append(
+                            CodeDependency(
+                                filepath=module_path,
+                                entity_name=entity.name,
+                            )
                         )
-                    )
 
-                else:
-                    code_dependency.append(
-                        CodeDependency(
-                            filepath=source.filename,
-                            entity_name=entity.name,
+                    else:
+                        code_dependency.append(
+                            CodeDependency(
+                                filepath=source.filename,
+                                entity_name=entity.name,
+                            )
                         )
-                    )
+                        
+                except FileNotFoundError as e:
+                    logger.debug(f"{entity.name=} not found")
 
             case str():
                 component = entity.split(":")
                 filepath, entity_name = (component[0], component[1])
+                logger.debug(f"Specifying dependencies in raw string: {filepath=}, {entity_name=}")
                 filepath = apply_relative_path(
                     relative_path=filepath,
                     absolute_base_path=source.filename.parent.resolve(),
                 )
-                code_dependency.append(
-                    CodeDependency(filepath=filepath, entity_name=entity_name)
-                )
+                try:
+                    code_dependency.append(
+                        CodeDependency(filepath=filepath, entity_name=entity_name)
+                    )
+                except FileNotFoundError as e:
+                    logger.debug(f"Cannot find {filepath=}")
 
             case other:
                 raise TypeError(f"Unknown type {type(other)}")

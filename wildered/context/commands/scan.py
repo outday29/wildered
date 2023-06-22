@@ -10,6 +10,7 @@ from ..tasks import TaskGroup, task_grouper
 def scan(
     filename: str,
     clipboard: bool = False,
+    remove_directive: bool = False
 ) -> None:
     source_code = ASTSourceCode.from_file(filename)
     task_groups = _get_task_groups(source=source_code)
@@ -18,6 +19,10 @@ def scan(
             task_groups,
             clipboard=clipboard,
         )
+        
+        if remove_directive:
+            # Since directive is already removed during parsing
+            source_code.save()
 
     else:
         print("No butterfly directive detected.")

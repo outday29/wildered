@@ -90,7 +90,7 @@ class Task(BaseModel):
             match self.task_type:
                 case "file":
                     brief = (
-                        f"Modify the program called {self.source.filename.name}.py. "
+                        f"Modify the program called {self.source.filename.name}. "
                     )
 
                 case "function":
@@ -160,7 +160,7 @@ class Task(BaseModel):
 
 def get_additional_context(dependencies: List[Dependency]) -> str:
     if dependencies != []:
-        result = "Below are snippets of code existed in the current project that you may find useful:\n"
+        result = "Below are snippets of code in the current project that you may find useful:\n"
         for dependency in dependencies:
             result += "```python\n" + dependency.resolve() + "\n```" + "\n"
         return result

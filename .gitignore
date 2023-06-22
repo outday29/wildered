@@ -6,10 +6,16 @@ sample_project
 .python-version
 .venv
 .vscode
-.butterfly
+.wildered
 .pytest_cache
 archive
 TODO.md
 dist
 Untitled.ipynb
 dummy.txt
+debug.log
+
+# My own testing
+test.py
+main.py
+models.py
