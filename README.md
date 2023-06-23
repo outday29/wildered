@@ -112,6 +112,5 @@ A more detailed documentation is still under development. Meanwhile you can lear
 
 ## Future works
 
-- Automatically detect dependencies instead of specifying all of them manually.
+- Automatically detect dependencies instead of specifying all of them manually. Also detect the dependencies of the dependencies.
 - Provide an option to automatically integrate the LLM code into your project code.
-- More comprehensive tests
