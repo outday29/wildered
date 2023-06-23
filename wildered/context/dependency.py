@@ -77,6 +77,7 @@ def infer_hint_list(hint_list: List[HintDirective], source: ASTSourceCode):
 def infer_hint(
     hint_directive: HintDirective, source: ASTSourceCode, dependency_lookup: dict
 ) -> List[Dependency]:
+    logger.debug(f"Receiving {dependency_lookup=} and {hint_directive=}")
     code_dependency = []
 
     for entity in hint_directive.entity_list:

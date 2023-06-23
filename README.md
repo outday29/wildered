@@ -43,7 +43,9 @@ class Point(NamedTuple):
 
 We wish to implement `find_y_intercept` in `test.py`. However, we cannot just copy paste the whole script, as the function depends on the definition of `Point` object, which is in `models.py`. 
 
-Lets see what `wildered` can do, first, we add directives to the `test.py`.
+Lets see what `wildered` can do.
+
+First, we add directives to the `test.py`.
 
 New `test.py`:
 

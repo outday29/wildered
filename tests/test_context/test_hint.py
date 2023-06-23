@@ -37,3 +37,13 @@ def test_aggregate_hint():
     dependencies = task_group[0].aggregate_dependencies
     assert len(dependencies) == 2
     assert str(dependencies[0].filepath).endswith("relative_hint.py")
+    
+    
+def test_non_relative_import():
+    task_group = get_task_group_from_file(
+        "tests/test_context/example_scripts/hint/non_relative_import.py"
+    )
+    assert len(task_group) == 1
+    dependencies = task_group[0].task_list[0].dependencies
+    assert len(dependencies) == 1
+    assert str(dependencies[0].filepath).endswith("aggregate_hint.py")
