@@ -10,7 +10,8 @@ from ..tasks import TaskGroup, task_grouper
 def scan(
     filename: str,
     clipboard: bool = False,
-    remove_directive: bool = False
+    remove_directive: bool = False,
+    auto_integrate: bool = False,
 ) -> None:
     source_code = ASTSourceCode.from_file(filename)
     task_groups = _get_task_groups(source=source_code)
@@ -18,6 +19,7 @@ def scan(
         task_executor(
             task_groups,
             clipboard=clipboard,
+            auto_integrate=auto_integrate
         )
         
         if remove_directive:

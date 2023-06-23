@@ -15,6 +15,7 @@ from wildered.ast.directive_parser import (
 )
 from wildered.group import EntityGroup, EntityGrouper
 from wildered.models import BaseSourceCode
+from wildered.logger import logger
 
 from .dependency import Dependency, infer_hint_list, union_dependencies
 from .directives import AutocompleteDirective
@@ -79,6 +80,15 @@ class Task(BaseModel):
 
         else:
             return self.node.unparse()
+        
+    def integrate(
+        self,
+        new_code: str,
+        **kwargs
+    ) -> None:
+        self.node.update(new_code=new_code, **kwargs)
+        self.node.save()
+        
 
     @property
     def requirement(self):
@@ -208,3 +218,10 @@ class TaskGroup(BaseModel):
 
         formatted_prompt = template.format(**input_dict)
         return formatted_prompt
+    
+    def integrate(self, response: str) -> None:
+        for i in self.task_list:
+            i.integrate(new_code=response)
+        
+        # We only have to update the import statement once
+        self.task_list[0].source.update_import_statement(new_code=response)
