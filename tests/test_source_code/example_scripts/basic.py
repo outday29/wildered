@@ -1,6 +1,8 @@
 import hello
 import popcorn
 import there
+from hello import there
+from .relative_import import foo
 
 popcorn.run(popcorn.pop(requirement="This is file level"), popcorn.hurray(dummy="Ok"))
 

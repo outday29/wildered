@@ -1,5 +1,7 @@
 import hello
 import there
+from hello import there
+from .relative_import import foo
 
 def dummy_function_1(param1: int, param2: str) -> None:
     """This is a dummy function.
