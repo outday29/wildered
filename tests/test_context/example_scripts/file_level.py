@@ -1,6 +1,11 @@
 import hello
 import there
 
+import wildered
+
+wildered.run(wildered.autocomplete(requirement="Please complete this function"))
+
+
 def dummy_function_1(param1: int, param2: str) -> None:
     """This is a dummy function.
 
@@ -8,13 +13,8 @@ def dummy_function_1(param1: int, param2: str) -> None:
         param1 (int): The first parameter.
         param2 (str): The second parameter.
     """
-    # New function implementation
-    # The comments should still be preserved
-    print(param1)
-    a = param1 + 100
-    for i in param2:
-        print(i)
-    return None
+    # Implementation goes here
+
 
 def dummy_function_2() -> bool:
     """This is another dummy function.
@@ -22,11 +22,12 @@ def dummy_function_2() -> bool:
     Returns:
         bool: The boolean result.
     """
-# Implementation goes here
+    # Implementation goes here
+
 
 class DummyClass1:
     """This is a dummy class."""
-    # This is the new class
+
     class_attribute_1 = 10
 
     def __init__(self, param: int) -> None:
@@ -35,7 +36,7 @@ class DummyClass1:
         Args:
             param (int): The parameter for initialization.
         """
-        self.param = param
+        # Implementation goes here
 
     def method_1(self) -> str:
         """This is a dummy method.
@@ -44,18 +45,12 @@ class DummyClass1:
             str: The string result.
         """
         # Implementation goes here
-        a = 100
-        b = 200
-        c = a + b
-        return 'Hello world'
 
-    def method_2(self) -> None:
-        return None
-# Implementation goes here
 
 class DummyClass2:
     """This is another dummy class."""
-    class_attribute_2 = 'dummy'
+
+    class_attribute_2 = "dummy"
 
     def __init__(self, param: str) -> None:
         """Initializes DummyClass2.
@@ -63,12 +58,7 @@ class DummyClass2:
         Args:
             param (str): The parameter for initialization.
         """
-        # The comments should still be preserved
-        a = 'hello'
-        self.param = param
-        print('This is the new class method')
-        return None
-    # Implementation goes here
+        # Implementation goes here
 
     def method_2(self) -> int:
         """This is another dummy method.
@@ -76,4 +66,4 @@ class DummyClass2:
         Returns:
             int: The integer result.
         """
-# Implementation goes here
+        # Implementation goes here

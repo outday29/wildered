@@ -1,22 +1,35 @@
 [tool.poetry]
 name = "wildered"
-version = "0.1.4"
+version = "0.2.0"
 description = ""
 authors = ["engkheng <ongengkheng929@gmail.com>"]
 license = "MIT"
 readme = "README.md"
+repository = "https://github.com/outday29/wildered"
+
+[tool.poetry.scripts]
+wildered = 'wildered.context.cli.cli:main'
 
 [tool.poetry.dependencies]
 python = "^3.10"
 pydantic = "^1.10.8"
 ast-comments = "^1.0.1"
 libcst = "^1.0.0"
+langchain = "^0.0.198"
+wander = "^0.1.0"
+typer = "^0.9.0"
+pyperclip = "^1.8.2"
+jinja2 = "^3.1.2"
+loguru = "^0.7.0"
+guidance = "^0.0.64"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.0.270"
 pytest = "^7.3.1"
 black = "^23.3.0"
 poethepoet = "^0.20.0"
+pytest-cov = "^4.1.0"
+pytest-sugar = "^0.9.7"
 
 
 [tool.poetry.group.docs.dependencies]
@@ -48,6 +61,9 @@ lint = [
 exclude = [
     "expected_scripts",
     "example_scripts"
+]
+include = [
+    "wildered/*"
 ]
 
 [tool.ruff]

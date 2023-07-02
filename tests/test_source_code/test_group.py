@@ -15,7 +15,7 @@ def test_group(parser: BaseDirectiveParser):
         else:
             return "no_pop"
     
-    source = ASTSourceCode.from_file("./tests/example_scripts/group.py")
+    source = ASTSourceCode.from_file("./tests/test_source_code/example_scripts/group.py")
     entity_list = parser.parse(source=source, drop_directive=True)
     grouper = EntityGrouper(group_func=group_func)
     entity_groups = grouper.group(entity_list=entity_list)

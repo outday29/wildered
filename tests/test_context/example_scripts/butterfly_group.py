@@ -1,16 +1,10 @@
 import hello
-import popcorn
 import there
 
-popcorn.run(popcorn.pop(requirement="This is file level"), popcorn.hurray(dummy="Ok"))
+import wildered
 
 
-@popcorn.hurray(dummy="This is required field")
-@popcorn.pop(
-    requirement="Please complete this function",
-    test_dict={"hello": [world, 0x382], "there": 0.1},
-    some_list=[{"hello": there}, 123, [12, 124], True],
-)
+@wildered.autocomplete(group="foo")
 def dummy_function_1(param1: int, param2: str) -> None:
     """This is a dummy function.
 
@@ -19,12 +13,9 @@ def dummy_function_1(param1: int, param2: str) -> None:
         param2 (str): The second parameter.
     """
     # Implementation goes here
-    a = 100
-    b = 300
 
 
-@popcorn.hurray(dummy="This is good", hello=popcorn)
-@popcorn.pop(modify=True)
+@wildered.autocomplete(group="foo")
 def dummy_function_2() -> bool:
     """This is another dummy function.
 
@@ -34,7 +25,7 @@ def dummy_function_2() -> bool:
     # Implementation goes here
 
 
-@popcorn.pop(modify=False)
+@wildered.autocomplete(group="foo_2")
 class DummyClass1:
     """This is a dummy class."""
 
@@ -62,7 +53,7 @@ class DummyClass2:
 
     class_attribute_2 = "dummy"
 
-    @popcorn.pop(modify=True)
+    @wildered.autocomplete(group="foo_2")
     def __init__(self, param: str) -> None:
         """Initializes DummyClass2.
 

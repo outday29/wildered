@@ -16,9 +16,10 @@ from pydantic.dataclasses import dataclass
 
 DirectiveContext: TypeAlias = Literal["module", "class", "function"]
 
+
 class Identifier(BaseModel):
-    """A wrapper around variable-like names
-    """
+    """A wrapper around variable-like names"""
+
     node: ast.Expr | ast.Name | cst.Expr | cst.Name
     name: str
 
@@ -31,9 +32,7 @@ class BaseDirectiveConfig(object):
     positional_order: Optional[List[str]] = None
     alias: Optional[List[str]] = None
     allow_multiple: bool = True
-    allowed_context: Set[DirectiveContext] = Field(
-        default_factory=set
-    )  # TODO
+    allowed_context: Set[DirectiveContext] = Field(default_factory=set)  # TODO
     requires: List[str] = Field(default_factory=list)
     resists: List[str] = Field(default_factory=list)
 
@@ -41,7 +40,7 @@ class BaseDirectiveConfig(object):
     def set_default_context(cls, v):
         if not v:
             return {"module", "class", "function"}
-        
+
         else:
             return v
 
@@ -51,14 +50,14 @@ class BaseDirectiveConfig(object):
             values["alias"] = [values["name"]]
 
         return values
-    
+
     @root_validator()
     def compatible_requires_conflict(cls, values):
         if values["requires"] and values["resists"]:
             for i in values["requires"]:
                 if i in values["resists"]:
                     raise ValueError(f"{i} is in both requires and conflict list.")
-                
+
         return values
 
 
@@ -85,8 +84,8 @@ DirectiveConfig = dataclass(BaseDirectiveConfig).__pydantic_model__
 
 
 class Directive(BaseModel, ABC):
-    """Base class for holding directives
-    """
+    """Base class for holding directives"""
+
     _name: str  # What is the actual directive name used
     class_config: ClassVar[Optional[DirectiveConfig]] = None
 

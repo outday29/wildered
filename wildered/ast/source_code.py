@@ -189,22 +189,23 @@ class ASTSourceCode(BaseSourceCode):
             import_list = extract_import_list(
                 self.node, 
                 drop_directive=True, 
-                relative_only=True
+                relative_only=False
             )
-            
             for import_node in import_list:
-                module_name = import_node.module
-                imported_items = [alias.name for alias in import_node.names]
-                module_path = resolve_module_filepath(
-                    module_name,
-                    relative_level=import_node.level,
-                    absolute_base_path=self.filename,
-                )
-                # Resolve filepath from module_name
-                for i in imported_items:
-                    entity_map[i] = module_path
-
+                if isinstance(import_node, ast.ImportFrom):
+                    module_name = import_node.module
+                    imported_items = [alias.name for alias in import_node.names]
+                    module_path = resolve_module_filepath(
+                        module_name,
+                        relative_level=max([1, import_node.level]),
+                        absolute_base_path=self.filename,
+                    )
+                    # Resolve filepath from module_name
+                    for i in imported_items:
+                        entity_map[i] = module_path
             self._entity_map = entity_map
+            
+            
 
             return entity_map
 
