@@ -27,7 +27,7 @@ def scan(
             source_code.save()
 
     else:
-        print("No butterfly directive detected.")
+        print("No directive detected.")
 
 
 def _get_task_groups(source: ASTSourceCode) -> List[TaskGroup]:
