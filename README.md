@@ -71,7 +71,7 @@ Now we run the `wildered` cli command:
 wildered test.py
 ```
 
-`wildered` will format a prompt for you ready to be used for chatbot:
+`wildered` will format a prompt for you ready to be used for code completion LLM:
 
 ````
 I am writing a Python project and I need your help as a code assistant.
