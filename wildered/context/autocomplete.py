@@ -40,8 +40,7 @@ def format_task_prompt(group: TaskGroup, clipboard: bool) -> str:
     with temporary_workspace() as f:
         write_file(f, prompt)
         print(f"Prompt wrote into {f}")
-        print(f"Please replace it with the LLM responses.")
-        _ = input("Press enter to exit. ")
+        _ = input("Press enter to continue/exit. ")
         return read_file(f)
 
 

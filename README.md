@@ -2,6 +2,8 @@
 
 `wildered` is a personal, over-engineered, toy project for integrating your project code and other related information into your LLM prompt without having to copy-paste manually.
 
+<img src="data/demo.gif">
+
 ## Installation
 
 You can install `wildered` with `pip`.  You need to have Python version of 3.10 or above to use `wildered`.
