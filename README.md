@@ -1,6 +1,6 @@
 # Wildered
 
-`wildered` is a personal, over-engineered, toy project for integrating your project code and other related information into your LLM prompt without having to copy-paste manually.
+`wildered` is a personal, over-engineered, toy project for autocompleting your Python code using OpenAI GPT-3.5.
 
 <img src="data/demo.gif">
 
