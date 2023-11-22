@@ -1,6 +1,6 @@
 # Wildered
 
-`wildered` is a personal, over-engineered, toy project for integrating your project code and other related information into your LLM prompt without having to copy-paste manually.
+`wildered` is a personal, over-engineered, toy project for autocompleting your Python code using OpenAI GPT-3.5.
 
 <img src="data/demo.gif">
 
@@ -71,7 +71,7 @@ Now we run the `wildered` cli command:
 wildered test.py
 ```
 
-`wildered` will format a prompt for you ready to be used for chatbot:
+`wildered` will format a prompt for you ready to be used for code completion LLM:
 
 ````
 I am writing a Python project and I need your help as a code assistant.
