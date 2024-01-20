@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "wildered"
-version = "0.2.3"
+version = "0.2.4"
 description = ""
 authors = ["engkheng <ongengkheng929@gmail.com>"]
 license = "MIT"
@@ -21,7 +21,8 @@ typer = "^0.9.0"
 pyperclip = "^1.8.2"
 jinja2 = "^3.1.2"
 loguru = "^0.7.0"
-guidance = "^0.0.64"
+chardet = "^5.2.0"
+guidance = "^0.1.10"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.0.270"

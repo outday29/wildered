@@ -15,8 +15,10 @@ Untitled.ipynb
 dummy.txt
 debug.log
 .coverage
+venv
 
 # My own testing
 test.py
+demo.py
 main.py
 models.py

@@ -1,6 +1,5 @@
 import inspect
-from pathlib import Path
-from typing import Any, Dict, List, Literal
+from typing import List
 
 import pyperclip
 import guidance
@@ -13,8 +12,8 @@ from .tasks import (
     TaskGroup,
 )
 
-# Use OPENAI_API_KEY env
-guidance.llm = guidance.llms.OpenAI("text-davinci-003")
+gpt = guidance.models.OpenAI("gpt-3.5-turbo-instruct", echo=False)
+
 
 def task_executor(
     task_list: List[TaskGroup],
@@ -49,15 +48,17 @@ def augment_guidance_prompt(prompt: str) -> str:
     additions = inspect.cleandoc("""
         Your answer should only consist of code. All explanation should be done with comments instead of raw text.
         ```python
-        {{gen 'code'}}
-        ```
     """)
     prompt = prompt + additions
     logger.debug(f"After guidance: {prompt=}")
     return prompt
 
 def get_llm_response(prompt: str) -> str:
-    guidance_program = guidance(prompt)
-    raw_response = guidance_program()
-    cleaned = raw_response['code'].strip("```")
+    global gpt
+    with guidance.instruction():
+        lm = gpt + prompt
+    lm += guidance.gen(name="code", stop="```")
+    raw_response = lm._variables["code"]
+    cleaned = raw_response.strip("```")
+    
     return cleaned
